@@ -1,4 +1,4 @@
-
+import matplotlib.pyplot as plt
 
 def state_plotter(time, states, separate_axes=False):
     """
