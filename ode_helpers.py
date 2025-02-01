@@ -84,14 +84,14 @@ def plot_phase_plane(f,
                        Y,
                        U,
                        V,
-                       magnitude,
-                       cmap='gray_r',
+                       #magnitude,
+                       # cmap='gray_r',
                        scale=scale,
                        scale_units='xy')
 
     # Add a colorbar to indicate magnitude
-    cbar = plt.colorbar(quiver, ax=ax)
-    cbar.set_label('Vector Magnitude')
+    # cbar = plt.colorbar(quiver, ax=ax)
+    # cbar.set_label('Vector Magnitude')
 
     # Plot nullclines (where f(x, y) = 0 and g(x, y) = 0)
     ax.contour(X, Y, f(X, Y), levels=[0], colors='green', linewidths=2)
