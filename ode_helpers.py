@@ -47,55 +47,73 @@ def state_plotter(time, states, separate_axes=False):
     plt.show()
 
 
-def plot_phase_plane(f,
-                     g,
+def plot_phase_plane(dx_dt,
+                     dy_dt,
                      x_range=(-5, 5),
                      y_range=(-5, 5),
-                     density=20,
-                     scale=15,
+                     mesh_density=20,
+                     scale=20,
+                     stream_density=1,
                      trajectories=None):
     """
     Plots a phase plane diagram with a quiver plot, nullclines, and optional trajectories.
 
     Parameters:
-        f (function): dx/dt = f(x, y), function of x and y
-        g (function): dy/dt = g(x, y), function of x and y
+        dx_dt (function): dx/dt = f(x, y), function of x and y
+        dy_dt (function): dy/dt = g(x, y), function of x and y
         x_range (tuple): Range of x values (min, max)
         y_range (tuple): Range of y values (min, max)
-        density (int): Number of arrows in each direction for the quiver plot
+        mesh_density (int): Number of arrows in each direction for the quiver
+            plot
         scale (float): Scaling factor for quiver arrows (higher values make arrows shorter)
+        stream_density (float):
         trajectories (list of tuples): Optional, initial conditions for sample trajectories
     """
+    # Create a mesh grid for vector field
+    x = np.linspace(x_range[0], x_range[1], mesh_density)
+    y = np.linspace(y_range[0], y_range[1], mesh_density)
+    X, Y = np.meshgrid(x, y)
 
-    x_vals = np.linspace(x_range[0], x_range[1], density)
-    y_vals = np.linspace(y_range[0], y_range[1], density)
-    X, Y = np.meshgrid(x_vals, y_vals)
+    # Compute vector field
+    U = np.vectorize(lambda x, y: dx_dt(x, y))(X, Y)
+    V = np.vectorize(lambda x, y: dy_dt(x, y))(X, Y)
 
-    U = f(X, Y)
-    V = g(X, Y)
-
-    # Compute the magnitude for coloring
+    # Normalize vectors for better visualization
     magnitude = np.sqrt(U ** 2 + V ** 2)
+    U /= magnitude
+    V /= magnitude
 
     fig, ax = plt.subplots(figsize=(7, 7))
 
-    # Quiver plot with scaling control
-    quiver = ax.quiver(X,
-                       Y,
-                       U,
-                       V,
-                       #magnitude,
-                       # cmap='gray_r',
-                       scale=scale,
-                       scale_units='xy')
 
-    # Add a colorbar to indicate magnitude
-    # cbar = plt.colorbar(quiver, ax=ax)
-    # cbar.set_label('Vector Magnitude')
+    # Plot vector field using both quiver and streamplot
+    # ax.quiver(X, Y, U, V, color='gray', alpha=0.6, scale=scale)
+    strm= ax.streamplot(X, Y, U, V, color=magnitude, linewidth=0.8,
+        cmap='plasma', density=stream_density)
+
+    # Add a color bar
+    cbar = fig.colorbar(strm.lines, ax=ax, orientation='vertical', pad=0.1)
+    cbar.set_label('Vector Magnitude')
+
+
+    # Solve and plot trajectories for given initial conditions
+    def system(t, state):
+        x, y = state
+        return [dx_dt(x, y), dy_dt(x, y)]
+
+
+    if trajectories:
+        t_span = (0, 10)
+        t_eval = np.linspace(t_span[0], t_span[1], 1000)
+
+        for x0, y0 in trajectories:
+            sol = solve_ivp(system, t_span, [x0, y0], t_eval=t_eval,
+                            method='RK45')
+            plt.plot(sol.y[0], sol.y[1], label=f'Trajectory ({x0}, {y0})')
 
     # Plot nullclines (where f(x, y) = 0 and g(x, y) = 0)
-    ax.contour(X, Y, f(X, Y), levels=[0], colors='green', linewidths=2)
-    ax.contour(X, Y, g(X, Y), levels=[0], colors='red', linewidths=2)
+    ax.contour(X, Y, dx_dt(X, Y), levels=[0], colors='green', linewidths=2)
+    ax.contour(X, Y, dy_dt(X, Y), levels=[0], colors='red', linewidths=2)
 
     # Legend for nullclines
     legend_x = mlines.Line2D([], [], color='green',
@@ -103,15 +121,6 @@ def plot_phase_plane(f,
     legend_y = mlines.Line2D([], [], color='red',
                              linewidth=2, label=r'$\dot{y} = 0$')
     ax.legend(handles=[legend_x, legend_y], loc='upper right')
-
-    # Plot sample trajectories if provided
-    if trajectories:
-        from scipy.integrate import solve_ivp
-        for x0, y0 in trajectories:
-            t_span = (0, 10)
-            sol = solve_ivp(lambda t, z: [f(z[0], z[1]), g(z[0], z[1])],
-                            t_span, [x0, y0], dense_output=True)
-            ax.plot(sol.y[0], sol.y[1], 'r', lw=1.5)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')
