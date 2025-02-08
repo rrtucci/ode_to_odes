@@ -113,7 +113,8 @@ def plot_phase_plane(dx_dt,
 
     # Plot nullclines (where f(x, y) = 0 and g(x, y) = 0)
     ax.contour(X, Y, dx_dt(X, Y), levels=[0], colors='green', linewidths=2)
-    ax.contour(X, Y, dy_dt(X, Y), levels=[0], colors='red', linewidths=2)
+    ax.contour(X, Y, dy_dt(X, Y), levels=[0], colors='red', linewidths=2.5,
+               alpha=.5)
 
     # Legend for nullclines
     legend_x = mlines.Line2D([], [], color='green',
