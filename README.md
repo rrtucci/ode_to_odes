@@ -6,8 +6,9 @@ This is a supplement to the
 "Dynamical Systems" chapter of my book
 "Bayesuvius" at https://github.com/rrtucci/Bayesuvius
 
-It gives Python
-software that plots traces (waveforms) (i.e., $x(t)$ 
+The repo provides Python
+software that plots traces 
+(waveforms) (i.e., $x(t)$ 
  for
 state variable $x$ at time $t$) 
 and Phase Portraits
