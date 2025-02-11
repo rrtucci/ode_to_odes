@@ -2,6 +2,10 @@
 
 Welcome to ode_to_odes!
 
+This is a supplement to the
+"Dynamical Systems" chapter of my book
+"Bayesuvius" at https://github.com/rrtucci/Bayesuvius
+
 It gives Python
 software that plots traces (waveforms) (i.e., $x(t)$ 
  for
