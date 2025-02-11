@@ -12,8 +12,8 @@ software that plots traces
  for
 state variable $x$ at time $t$) 
 and Phase Portraits
-for dynamical systems 9i.e., systems
+for dynamical systems (i.e., systems
 of 1st order ODEs 
-(Ordinary Differential Equations). The repo contains a
+(Ordinary Differential Equations)). The repo contains a
 jupyter notebook for each of many
 famous dynamical systems.
